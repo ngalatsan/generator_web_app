@@ -1,13 +1,10 @@
 from flask import Flask, jsonify, request, render_template
-from flask.cli import load_dotenv
 from flask_cors import CORS
 from config import config
 import uuid
 import generator
 import db
 
-
-load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
@@ -30,7 +27,6 @@ def api_generate_uuid():
     new_uuid = str(uuid.uuid4())
     db.save_uuid(new_uuid)
     return jsonify({"uuid": new_uuid})
-
 
 @app.route('/api/generate-coordinates')
 def api_generate_coordinates():

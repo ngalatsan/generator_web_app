@@ -3,223 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>Генератор паролей и не только</title>
-    <style>
-        body { font-family: TrebuchetMS, sans-serif; margin: 20px; }
-        button { padding: 8px 16px; margin: 5px; }
-        pre { background: #f4f4f4; padding: 10px; }
-        #map { height: 400px; width: 100%; margin-top: 20px; }
-        .options { margin: 10px 0; }
-        .options label { margin-right: 15px; }
-        .color-display { width: 100px; height: 100px; border: 1px solid #ddd; margin: 10px 0; }
-        .color-result { display: flex; align-items: center; gap: 20px; }
-    </style>
-    <script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU" type="text/javascript"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <h1>Генератор паролей и не только</h1>
     <hr>
-    <div>
+
+    <div class="generator-section">
         <h2>Пароль</h2>
         <label>Длина: <input type="number" id="length" value="12" min="4"></label>
-
         <div class="options">
             <label><input type="checkbox" id="use-uppercase" checked> Заглавные буквы</label>
             <label><input type="checkbox" id="use-digits" checked> Цифры</label>
             <label><input type="checkbox" id="use-special" checked> Спецсимволы</label>
         </div>
-
-        <button onclick="generatePassword()">Сгенерировать</button>
+        <button id="generate-password">Сгенерировать</button>
         <pre id="password-result">Здесь появится пароль...</pre>
     </div>
     <hr>
-    <div>
-        <h2>UUID (универсальный уникальный идентификатор)</h2>
-        <button onclick="generateUUID()">Сгенерировать UUID</button>
+    <div class="generator-section">
+        <h2>UUID</h2>
+        <button id="generate-uuid">Сгенерировать UUID</button>
         <pre id="uuid-result">Здесь появится UUID...</pre>
     </div>
     <hr>
-    <div>
-         <h2>Генератор случайных координат</h2>
-        <h4>Широта</h4>
-        <label>Минимум: <input type="number" id="lat_min" value="-90" min="-90"></label>
-        <label>Максимум: <input type="number" id="lat_max" value="90" max="90"></label> <br>
-        <h4>Долгота</h4>
-        <label>Минимум: <input type="number" id="lon_min" value="-180" min="-180"></label>
-        <label>Максимум: <input type="number" id="lon_max" value="180" max="180"></label> <br><br>
-        <div>
-            <button onclick="generateCoordinates()">Сгенерировать координаты</button>
-            <pre id="coordinates-result">Координаты появятся здесь...</pre>
+    <div class="generator-section">
+        <h2>Генератор случайных координат</h2>
+        <div class="coordinate-inputs">
+            <h4>Широта</h4>
+            <label>Минимум: <input type="number" id="lat_min" value="-90" min="-90"></label>
+            <label>Максимум: <input type="number" id="lat_max" value="90" max="90"></label>
+
+            <h4>Долгота</h4>
+            <label>Минимум: <input type="number" id="lon_min" value="-180" min="-180"></label>
+            <label>Максимум: <input type="number" id="lon_max" value="180" max="180"></label>
         </div>
+        <button id="generate-coordinates">Сгенерировать координаты</button>
+        <pre id="coordinates-result">Координаты появятся здесь...</pre>
         <div id="map"></div>
     </div>
     <hr>
-    <div>
+    <div class="generator-section">
         <h2>Генератор цвета</h2>
-        <button onclick="generateColor()">Сгенерировать цвет</button>
-
+        <button id="generate-color">Сгенерировать цвет</button>
         <div class="color-result">
             <div class="color-display" id="color-display"></div>
-            <pre>HEX: <span id="hex-code">Здесь появится HEX...</span></pre>
-            <pre>RGB: <span id="rgb-code">Здесь появится RGB...</span></pre>
+            <div class="color-codes">
+                <pre>HEX: <span id="hex-code">Здесь появится HEX...</span></pre>
+                <pre>RGB: <span id="rgb-code">Здесь появится RGB...</span></pre>
+            </div>
         </div>
     </div>
 
-    <script>
-        async function generatePassword() {
-            try {
-                const length = document.getElementById('length').value;
-                const useUppercase = document.getElementById('use-uppercase').checked;
-                const useDigits = document.getElementById('use-digits').checked;
-                const useSpecial = document.getElementById('use-special').checked;
-
-                const url = new URL('http://localhost:5000/api/generate-password');
-                url.searchParams.append('length', length);
-                url.searchParams.append('use_uppercase', useUppercase);
-                url.searchParams.append('use_digits', useDigits);
-                url.searchParams.append('use_special_chars', useSpecial);
-
-                const response = await fetch(url);
-
-                const data = await response.json();
-                document.getElementById('password-result').textContent = data.password;
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('password-result').textContent = 'Ошибка: ' + error.message;
-            }
-        }
-
-        async function generateUUID() {
-            try {
-                const response = await fetch('/api/generate-uuid');
-                const data = await response.json();
-                document.getElementById('uuid-result').textContent = data.uuid;
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('uuid-result').textContent = 'Ошибка: ' + error.message;
-            }
-        }
-
-        let map;
-        let placemark;
-
-        function initMap() {
-          ymaps.ready(function() {
-            const defaultCoords = [55.710702, 37.603747];
-
-            map = new ymaps.Map("map", {
-              center: defaultCoords,
-              zoom: 17,
-              controls: ['zoomControl', 'typeSelector']
-            });
-
-            placemark = new ymaps.Placemark(
-              defaultCoords,
-              { hintContent: 'Начальная точка' },
-              { preset: 'islands#redIcon' }
-            );
-            map.geoObjects.add(placemark);
-          });
-        }
-
-        async function generateCoordinates() {
-            try {
-                // Получаем значения из полей ввода
-                const lat_min = parseFloat(document.getElementById('lat_min').value);
-                const lat_max = parseFloat(document.getElementById('lat_max').value);
-                const lon_min = parseFloat(document.getElementById('lon_min').value);
-                const lon_max = parseFloat(document.getElementById('lon_max').value);
-
-                // Валидация параметров
-                const validationError = validateCoordinates(lat_min, lat_max, lon_min, lon_max);
-                if (validationError) {
-                    throw new Error(validationError);
-                }
-
-                // Если валидация прошла - делаем запрос
-                const url = new URL('http://localhost:5000/api/generate-coordinates');
-                url.searchParams.append('lat_min', lat_min);
-                url.searchParams.append('lat_max', lat_max);
-                url.searchParams.append('lon_min', lon_min);
-                url.searchParams.append('lon_max', lon_max);
-
-                const response = await fetch(url);
-                const data = await response.json();
-
-                // Обработка ответа сервера
-                document.getElementById('coordinates-result').textContent =
-                    `Широта: ${data.latitude}\nДолгота: ${data.longitude}\nСсылка: ${data.yandex_map_url}`;
-                document.getElementById('coordinates-result').style.color = "black";
-
-                // Обновление карты
-                ymaps.ready(function() {
-                    if (placemark) map.geoObjects.remove(placemark);
-                    placemark = new ymaps.Placemark(
-                        [data.latitude, data.longitude],
-                        { balloonContent: 'Случайная точка' },
-                        { preset: 'islands#redIcon' }
-                    );
-                    map.geoObjects.add(placemark);
-                    map.setCenter([data.latitude, data.longitude], 8);
-                });
-
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('coordinates-result').textContent = error.message;
-                document.getElementById('coordinates-result').style.color = "red";
-
-                // Очищаем карту при ошибке
-                ymaps.ready(function() {
-                    if (placemark) map.geoObjects.remove(placemark);
-                });
-            }
-        }
-
-        // Функция валидации координат
-        function validateCoordinates(lat_min, lat_max, lon_min, lon_max) {
-            // Проверка на числа
-            if (isNaN(lat_min) || isNaN(lat_max) || isNaN(lon_min) || isNaN(lon_max)) {
-                return "Все значения должны быть числами";
-            }
-
-            // Проверка диапазонов широты
-            if (lat_min < -90 || lat_min > 90 || lat_max < -90 || lat_max > 90) {
-                return "Широта должна быть в диапазоне от -90 до 90";
-            }
-
-            // Проверка диапазонов долготы
-            if (lon_min < -180 || lon_min > 180 || lon_max < -180 || lon_max > 180) {
-                return "Долгота должна быть в диапазоне от -180 до 180";
-            }
-
-            // Проверка min <= max
-            if (lat_min >= lat_max) {
-                return "Минимальная широта должна быть меньше максимальной";
-            }
-
-            if (lon_min >= lon_max) {
-                return "Минимальная долгота должна быть меньше максимальной";
-            }
-
-            return null; // Нет ошибок
-        }
-
-        window.onload = initMap;
-
-        async function generateColor() {
-            try {
-                const response = await fetch('/api/generate-color');
-                const colorData = await response.json();
-
-                document.getElementById('color-display').style.backgroundColor = colorData.hex;
-                document.getElementById('hex-code').textContent = colorData.hex;
-                document.getElementById('rgb-code').textContent = colorData.rgb;
-
-            } catch (error) {
-                console.error('Ошибка:', error);
-                document.getElementById('hex-code').textContent = 'Ошибка: ' + error.message;
-                document.getElementById('rgb-code').textContent = '';
-            }
-        }
-    </script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
