@@ -1,34 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 body {
-    font-family: TrebuchetMS,
-    sans-serif; margin: 20px;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    background-color: #0e0e0f;
+    color: #faf3f9;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    font-size: 16px;
 }
-button {
-    padding: 8px 16px;
-    margin: 5px;
+
+h1, h2, h4 {
+    font-family: 'Space Mono', monospace;
+    color: #df31a8;
+    font-size: 16px;
 }
-pre {
-    background: #f4f4f4;
-    padding: 10px;
+
+h1 {
+    font-size: 2rem;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
-#map {
-    height: 400px;
-    width: 100%;
-    margin-top: 20px;
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
-.options {
-    margin: 10px 0;
+
+h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    margin-top: 0px;
 }
-.options label {
+
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #333;
+    margin: 30px 0;
+}
+
+.generator-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #1a1a1b;
+    border-radius: 5px;
+    border-left: 3px solid #333;
+}
+
+.generator-section:hover {
+    border-left-color: #df31a8;
+}
+
+input[type="number"], input[type="checkbox"] {
+    background-color: #0e0e0f;
+    border: 1px solid #333;
+    color: #faf3f9;
+    padding: 8px;
+    margin: 8px 0;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 18px;
+}
+
+input[type="number"] {
+    width: 70px;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+label {
+    font-size: 1rem;
     margin-right: 15px;
 }
-.color-display {
-    width: 100px;
-    height: 100px;
-    border: 1px solid #ddd;
-    margin: 10px 0;
+
+button {
+    background-color: #0e0e0f;
+    color: #faf3f9;
+    border: 1px solid #df31a8;
+    padding: 12px 20px;
+    margin: 15px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    border-radius: 3px;
 }
+
+button:hover {
+    background-color: #df31a8;
+    color: #0e0e0f;
+}
+
+pre {
+    background-color: #606060;
+    border: 1px solid #333;
+    padding: 18px;
+    border-radius: 3px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 15px 0;
+    color: #faf3f9;
+    line-height: 1.5;
+}
+
+.options {
+    margin-right: 20px;
+    display: flex;
+}
+
+.options label {
+    display: block;
+    margin-right: 15px;
+    font-size: 1rem;
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.coordinate-inputs {
+    display: grid;
+    grid-template-areas:
+        "lat-title lon-title"
+        "lat-min lon-min"
+        "lat-max lon-max";
+    grid-template-columns: auto auto;
+    gap: 10px 20px;
+    margin-bottom: 20px;
+    align-items: start;
+    justify-content: start;
+}
+
+.coordinate-inputs h4:nth-of-type(1) { grid-area: lat-title; }
+.coordinate-inputs label:nth-of-type(1) { grid-area: lat-min; }
+.coordinate-inputs label:nth-of-type(2) { grid-area: lat-max; }
+.coordinate-inputs h4:nth-of-type(2) { grid-area: lon-title; }
+.coordinate-inputs label:nth-of-type(3) { grid-area: lon-min; }
+.coordinate-inputs label:nth-of-type(4) { grid-area: lon-max; }
+
+.coordinate-inputs h4 {
+    margin: 0 0 5px 0;
+    color: #df31a8;
+    white-space: nowrap;
+}
+
+.coordinate-inputs label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.coordinate-inputs label input {
+    width: 80px;
+    padding: 6px;
+    background-color: #0e0e0f;
+    border: 1px solid #333;
+    color: #faf3f9;
+}
+
 .color-result {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.color-display {
+    width: 130px;
+    height: 130px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    background-color: #0e0e0f;
+}
+
+.color-codes pre {
+    margin: 8px 0;
+    padding: 12px;
+}
+
+#map {
+    width: 100%;
+    height: 350px;
+    margin-top: 20px;
+    border: 1px solid #333;
+    background-color: #1a1a1b;
+}
+
+a:link {
+    color: #faf3f9;
+}
+
+a:visited {
+    color: #df31a8;
 }
